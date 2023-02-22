@@ -1,0 +1,31 @@
+[package]
+name = "axum-todo"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+strip = true
+overflow-checks = true
+
+[dependencies]
+anyhow = "1.0.69"
+itertools = "0.10.5"
+maplit = "1.0.2"
+either = "1.8.1"
+once_cell = "1.17.1"
+derive_more = "0.99.17"
+serde = { version = "1.0.152", features = ["derive"] }
+tokio = { version = "1.25", features = ["macros", "rt-multi-thread"] }
+
+log = "0.4.17"
+tracing = "0.1.37"
+tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
+
+tower = "0.4.13"
+tower-http = { version = "0.3.5", features = ["request-id", "compression-br", "timeout", "trace"] }
+axum = { version = "0.6.7", features = ["headers"] }
+
+aws-config = "0.54.1"
+aws-sdk-config = "0.24.0"
+aws-sdk-dynamodb = "0.24.0"
+serde_dynamo = { version = "4.0.12", features = ["aws-sdk-dynamodb+0_24"] }
