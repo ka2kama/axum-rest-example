@@ -1,9 +1,10 @@
+use std::borrow::Cow;
+use std::time::Duration;
+
 use axum::body::HttpBody;
 use axum::http::Request;
 use axum::routing::get;
 use axum::Router;
-use std::borrow::Cow;
-use std::time::Duration;
 use tower::ServiceBuilder;
 use tower_http::request_id::{
     MakeRequestUuid, PropagateRequestIdLayer, RequestId, SetRequestIdLayer,
@@ -13,17 +14,19 @@ use tower_http::trace::TraceLayer;
 use tower_http::ServiceBuilderExt;
 use tracing::error_span;
 
+use crate::config::{AppConfig, HttpConfig};
+
 async fn root() -> &'static str {
     "Hello, World!"
 }
 
-pub fn create_route() -> Router {
+pub fn create_route(app_config: &AppConfig) -> Router {
     let app = Router::new().route("/", get(root));
-    set_middleware_stack(app)
+    set_middleware_stack(app, &app_config.http)
 }
 
 #[inline]
-fn set_middleware_stack<S, B>(app: Router<S, B>) -> Router<S, B>
+fn set_middleware_stack<S, B>(app: Router<S, B>, http_config: &HttpConfig) -> Router<S, B>
 where
     S: Clone + Send + Sync + 'static,
     B: HttpBody + Send + 'static,
@@ -52,7 +55,9 @@ where
         // Compress response bodies
         .compression()
         // Return an error after 30 seconds
-        .layer(TimeoutLayer::new(Duration::from_secs(30)))
+        .layer(TimeoutLayer::new(Duration::from_secs(
+            http_config.timeout_seconds,
+        )))
         .into_inner();
 
     app.layer(middleware_stack)
