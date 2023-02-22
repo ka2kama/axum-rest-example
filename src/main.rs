@@ -8,7 +8,8 @@ use axum::{Router, Server};
 use crate::config::AppConfig;
 
 mod config;
-mod route;
+mod domain;
+mod presentation;
 
 #[inline]
 async fn init_app(app_config: &AppConfig) -> Result<Router> {
@@ -26,7 +27,7 @@ async fn init_app(app_config: &AppConfig) -> Result<Router> {
         .await;
     let _dynamodb_client = Arc::new(aws_sdk_dynamodb::Client::new(&config));
 
-    let router = route::create_route(app_config);
+    let router = presentation::http::create_route(app_config);
     Ok(router)
 }
 

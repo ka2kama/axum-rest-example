@@ -13,18 +13,18 @@ itertools = { version = "0.10.5", default-features = false }
 maplit = { version = "1.0.2", default-features = false }
 either = { version = "1.8.1", default-features = false }
 once_cell = { version = "1.17.1", default-features = false }
-derive_more = { version = "0.99.17", default-features = false }
+derive_more = { version = "0.99.17", default-features = false, features = ["constructor"]}
 serde = { version = "1.0.152", default-features = false, features = ["derive"] }
 tokio = { version = "1.25", default-features = false, features = ["macros", "rt-multi-thread"] }
 config = { version = "0.13.3", default-features = false }
 
 log = { version = "0.4.17", default-features = false }
 tracing = { version = "0.1.37", default-features = false }
-tracing-subscriber = { version = "0.3.16", default-features = false, features = ["fmt", "tracing-log"] }
+tracing-subscriber = { version = "0.3.16", default-features = false, features = ["fmt", "ansi", "tracing-log"] }
 
 tower = { version = "0.4.13", default-features = false }
 tower-http = { version = "0.3.5", default-features = false, features = ["request-id", "compression-br", "timeout", "trace"] }
-axum = { version = "0.6.7", default-features = false, features = ["tokio", "http2"] }
+axum = { version = "0.6.7", default-features = false, features = ["tokio", "http2", "json"] }
 
 aws-config = { version = "0.54.1", default-features = false }
 aws-sdk-config = { version = "0.24.0", default-features = false }

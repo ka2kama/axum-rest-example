@@ -3,7 +3,6 @@ use std::time::Duration;
 
 use axum::body::HttpBody;
 use axum::http::Request;
-use axum::routing::get;
 use axum::Router;
 use tower::ServiceBuilder;
 use tower_http::request_id::{
@@ -15,13 +14,15 @@ use tower_http::ServiceBuilderExt;
 use tracing::error_span;
 
 use crate::config::{AppConfig, HttpConfig};
+use crate::presentation::http::route::book_route::BookRoute;
+use crate::presentation::http::route::health_check_route::HealthCheckRoute;
 
-async fn root() -> &'static str {
-    "Hello, World!"
-}
+pub mod route;
 
 pub fn create_route(app_config: &AppConfig) -> Router {
-    let app = Router::new().route("/", get(root));
+    let app = Router::new()
+        .nest("/health", HealthCheckRoute::route())
+        .nest("/books", BookRoute::route());
     set_middleware_stack(app, &app_config.http)
 }
 
