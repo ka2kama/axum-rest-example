@@ -21,6 +21,6 @@ where
 }
 
 async fn books_index(book_usecase: State<DynBookUsecase>) -> impl IntoResponse {
-    let books = book_usecase.get_books();
+    let books = book_usecase.get_books().await.unwrap();
     Json(books)
 }

@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use aws_sdk_config::Credentials;
 
-use crate::infrastructure::db::dynamodb::book_repo_for_dynamodb::UserRepoForDynamoDB;
-use crate::infrastructure::db::dynamodb::user_repo_for_dynamodb::BookRepoForDynamoDB;
+use crate::infrastructure::db::dynamodb::book_repo_for_dynamodb::BookRepoForDynamoDB;
+use crate::infrastructure::db::dynamodb::user_repo_for_dynamodb::UserRepoForDynamoDB;
 use crate::usecase::book_usecase::{BookUsecase, BookUsecaseImpl};
 use crate::usecase::user_usecase::{UserUsecase, UserUsecaseImpl};
 

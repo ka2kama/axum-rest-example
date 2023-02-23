@@ -1,10 +1,13 @@
+use anyhow::Result;
+use async_trait::async_trait;
 use derive_more::Constructor;
 
 use crate::domain::book::book_repo::DynBookRepo;
 use crate::domain::book::Book;
 
+#[async_trait]
 pub trait BookUsecase {
-    fn get_books(&self) -> Vec<Book>;
+    async fn get_books(&self) -> Result<Vec<Book>>;
 }
 
 #[derive(Constructor)]
@@ -12,8 +15,10 @@ pub struct BookUsecaseImpl {
     book_repo: DynBookRepo,
 }
 
+#[async_trait]
 impl BookUsecase for BookUsecaseImpl {
-    fn get_books(&self) -> Vec<Book> {
-        self.book_repo.get_books()
+    async fn get_books(&self) -> Result<Vec<Book>> {
+        let books = self.book_repo.get_books().await?;
+        Ok(books)
     }
 }

@@ -1,9 +1,13 @@
 use std::sync::Arc;
 
+use anyhow::Result;
+use async_trait::async_trait;
+
 use crate::domain::book::Book;
 
 pub type DynBookRepo = Arc<dyn BookRepo + Send + Sync>;
 
+#[async_trait]
 pub trait BookRepo {
-    fn get_books(&self) -> Vec<Book>;
+    async fn get_books(&self) -> Result<Vec<Book>>;
 }

@@ -2,16 +2,16 @@ use std::sync::Arc;
 
 use derive_more::Constructor;
 
-use crate::domain::book::book_repo::BookRepo;
-use crate::domain::book::Book;
+use crate::domain::user::user_repo::UserRepo;
+use crate::domain::user::User;
 
 #[derive(Constructor)]
-pub struct BookRepoForDynamoDB {
+pub struct UserRepoForDynamoDB {
     _dynamodb_client: Arc<aws_sdk_dynamodb::Client>,
 }
 
-impl BookRepo for BookRepoForDynamoDB {
-    fn get_books(&self) -> Vec<Book> {
-        vec![Book::new("1".to_string(), "rust".to_string())]
+impl UserRepo for UserRepoForDynamoDB {
+    fn get_user(&self) -> Option<User> {
+        None
     }
 }
