@@ -2,11 +2,14 @@ use std::sync::Arc;
 
 use aws_sdk_config::Credentials;
 
-use crate::infrastructure::db::dynamodb::book_repo_for_dynamodb::BookRepoForDynamoDB;
-use crate::usecase::book_usecase::{BookUsecaseImpl, DynBookUsecase};
+use crate::infrastructure::db::dynamodb::book_repo_for_dynamodb::UserRepoForDynamoDB;
+use crate::infrastructure::db::dynamodb::user_repo_for_dynamodb::BookRepoForDynamoDB;
+use crate::usecase::book_usecase::{BookUsecase, BookUsecaseImpl};
+use crate::usecase::user_usecase::{UserUsecase, UserUsecaseImpl};
 
 pub struct Modules {
-    pub book_usecase: DynBookUsecase,
+    pub user_usecase: Arc<dyn UserUsecase + Send + Sync>,
+    pub book_usecase: Arc<dyn BookUsecase + Send + Sync>,
 }
 
 impl Modules {
@@ -24,10 +27,15 @@ impl Modules {
             .load()
             .await;
         let dynamodb_client = Arc::new(aws_sdk_dynamodb::Client::new(&config));
-        let book_repo = Arc::new(BookRepoForDynamoDB::new(dynamodb_client));
+        let user_repo = Arc::new(UserRepoForDynamoDB::new(Arc::clone(&dynamodb_client)));
+        let book_repo = Arc::new(BookRepoForDynamoDB::new(Arc::clone(&dynamodb_client)));
 
+        let user_usecase = Arc::new(UserUsecaseImpl::new(user_repo));
         let book_usecase = Arc::new(BookUsecaseImpl::new(book_repo));
 
-        Self { book_usecase }
+        Self {
+            user_usecase,
+            book_usecase,
+        }
     }
 }

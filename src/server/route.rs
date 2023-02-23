@@ -18,11 +18,19 @@ use crate::module::Modules;
 
 pub mod book_route;
 pub mod health_check_route;
+pub mod user_route;
 
-pub fn create(modules: Modules, http_config: &HttpConfig) -> Router {
+pub fn create(
+    Modules {
+        user_usecase,
+        book_usecase,
+    }: Modules,
+    http_config: &HttpConfig,
+) -> Router {
     let app = Router::new()
         .nest("/health", health_check_route::route())
-        .nest("/books", book_route::route(modules.book_usecase));
+        .nest("/users", user_route::route(user_usecase))
+        .nest("/books", book_route::route(book_usecase));
     set_middleware_stack(app, http_config)
 }
 
