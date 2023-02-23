@@ -1,51 +1,26 @@
-use std::net::SocketAddr;
-use std::sync::Arc;
-
 use anyhow::Result;
-use aws_sdk_config::Credentials;
-use axum::{Router, Server};
 
 use crate::config::AppConfig;
+use crate::module::Modules;
 
 mod config;
 mod domain;
-mod presentation;
-
-#[inline]
-async fn init_app(app_config: &AppConfig) -> Result<Router> {
-    let config = aws_config::from_env()
-        .endpoint_url("http://localhost:8000")
-        .credentials_provider(Credentials::new(
-            "dummy-key",
-            "dummy-secret",
-            None,
-            None,
-            "dummy-provider",
-        ))
-        .region("ap-northeast-1")
-        .load()
-        .await;
-    let _dynamodb_client = Arc::new(aws_sdk_dynamodb::Client::new(&config));
-
-    let router = presentation::http::create_route(app_config);
-    Ok(router)
-}
+mod infrastructure;
+mod module;
+mod server;
+mod usecase;
 
 async fn try_main() -> Result<()> {
+    tracing_subscriber::fmt::init();
     let app_config = AppConfig::load()?;
-    let app = init_app(&app_config).await?;
-    let addr = SocketAddr::from(([127, 0, 0, 1], app_config.http.port));
-    log::info!("listening on {addr}");
-    Server::bind(&addr).serve(app.into_make_service()).await?;
-
-    Ok(())
+    let modules = Modules::init().await;
+    server::run(modules, app_config.http).await
 }
 
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::fmt::init();
     if let Err(e) = try_main().await {
-        log::error!("{:?}", e);
+        eprintln!("{:?}", e);
         std::process::exit(1);
     }
 }

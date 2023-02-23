@@ -13,17 +13,17 @@ use tower_http::trace::TraceLayer;
 use tower_http::ServiceBuilderExt;
 use tracing::error_span;
 
-use crate::config::{AppConfig, HttpConfig};
-use crate::presentation::http::route::book_route::BookRoute;
-use crate::presentation::http::route::health_check_route::HealthCheckRoute;
+use crate::config::HttpConfig;
+use crate::module::Modules;
 
-pub mod route;
+pub mod book_route;
+pub mod health_check_route;
 
-pub fn create_route(app_config: &AppConfig) -> Router {
+pub fn create(modules: Modules, http_config: &HttpConfig) -> Router {
     let app = Router::new()
-        .nest("/health", HealthCheckRoute::route())
-        .nest("/books", BookRoute::route());
-    set_middleware_stack(app, &app_config.http)
+        .nest("/health", health_check_route::route())
+        .nest("/books", book_route::route(modules.book_usecase));
+    set_middleware_stack(app, http_config)
 }
 
 #[inline]
