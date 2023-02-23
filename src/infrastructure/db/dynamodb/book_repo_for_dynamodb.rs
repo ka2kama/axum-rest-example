@@ -7,7 +7,7 @@ use crate::domain::book::Book;
 
 #[derive(Constructor)]
 pub struct BookRepoForDynamoDB {
-    dynamodb_client: Arc<aws_sdk_dynamodb::Client>,
+    _dynamodb_client: Arc<aws_sdk_dynamodb::Client>,
 }
 
 impl BookRepo for BookRepoForDynamoDB {

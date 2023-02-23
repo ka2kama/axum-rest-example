@@ -3,10 +3,10 @@ use std::sync::Arc;
 use aws_sdk_config::Credentials;
 
 use crate::infrastructure::db::dynamodb::book_repo_for_dynamodb::BookRepoForDynamoDB;
-use crate::usecase::book_usecase::{BookUsecase, BookUsecaseImpl};
+use crate::usecase::book_usecase::{BookUsecaseImpl, DynBookUsecase};
 
 pub struct Modules {
-    pub book_usecase: Arc<dyn BookUsecase + Send + Sync>,
+    pub book_usecase: DynBookUsecase,
 }
 
 impl Modules {
@@ -24,11 +24,10 @@ impl Modules {
             .load()
             .await;
         let dynamodb_client = Arc::new(aws_sdk_dynamodb::Client::new(&config));
-        let book_repo = BookRepoForDynamoDB::new(dynamodb_client);
-        let book_usecase = BookUsecaseImpl::new(book_repo);
+        let book_repo = Arc::new(BookRepoForDynamoDB::new(dynamodb_client));
 
-        Self {
-            book_usecase: Arc::new(book_usecase),
-        }
+        let book_usecase = Arc::new(BookUsecaseImpl::new(book_repo));
+
+        Self { book_usecase }
     }
 }

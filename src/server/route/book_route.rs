@@ -1,14 +1,10 @@
-use std::sync::Arc;
-
 use axum::body::HttpBody;
 use axum::extract::State;
 use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::{Json, Router};
 
-use crate::usecase::book_usecase::BookUsecase;
-
-type DynBookUsecase = Arc<dyn BookUsecase + Send + Sync>;
+use crate::usecase::book_usecase::DynBookUsecase;
 
 pub fn route<S, B>(book_usecase: DynBookUsecase) -> Router<S, B>
 where
