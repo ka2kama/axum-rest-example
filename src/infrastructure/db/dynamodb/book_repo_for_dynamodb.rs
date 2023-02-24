@@ -1,7 +1,5 @@
 use std::sync::Arc;
 
-use anyhow::Result;
-use async_trait::async_trait;
 use derive_more::Constructor;
 use serde_dynamo::from_items;
 
@@ -13,14 +11,14 @@ pub struct BookRepoForDynamoDB {
     dynamodb_client: Arc<aws_sdk_dynamodb::Client>,
 }
 
-#[async_trait]
+#[async_trait::async_trait]
 impl BookRepo for BookRepoForDynamoDB {
-    async fn get_books(&self) -> Result<Vec<Book>> {
+    async fn get_books(&self) -> anyhow::Result<Vec<Book>> {
         let req = self.dynamodb_client.scan().table_name("books");
         let result = req.send().await?;
         let books = match result.items {
-            None => vec![],
-            Some(items) => from_items(items)?,
+            Some(items) if !items.is_empty() => from_items(items).unwrap(),
+            _ => vec![],
         };
         Ok(books)
     }

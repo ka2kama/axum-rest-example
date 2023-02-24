@@ -1,5 +1,6 @@
 use crate::domain::user::User;
 
+#[async_trait::async_trait]
 pub trait UserRepo {
-    fn get_user(&self) -> Option<User>;
+    async fn get_user(&self, id: String) -> Option<User>;
 }
