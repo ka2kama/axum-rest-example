@@ -1,6 +1,4 @@
-use axum::body::HttpBody;
 use axum::Router;
-use tower_http::ServiceBuilderExt;
 
 use crate::module::Modules;
 
@@ -8,7 +6,7 @@ pub mod book_route;
 pub mod health_check_route;
 pub mod user_route;
 
-pub fn create(
+pub fn accumulate(
     Modules {
         user_usecase,
         book_usecase,
