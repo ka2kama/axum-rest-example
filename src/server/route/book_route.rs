@@ -21,7 +21,9 @@ where
         .with_state(book_usecase)
 }
 
-async fn books_index(book_usecase: State<DynBookUsecase>) -> Result<impl IntoResponse, AppError> {
+async fn books_index(
+    State(book_usecase): State<DynBookUsecase>,
+) -> Result<impl IntoResponse, AppError> {
     let books = book_usecase.get_books().await?;
     Ok(Json(books))
 }

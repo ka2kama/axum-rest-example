@@ -1,8 +1,8 @@
+use crate::domain::book::book_repo::BookRepo;
+use crate::domain::book::Book;
 use async_trait::async_trait;
 use derive_more::Constructor;
-
-use crate::domain::book::book_repo::DynBookRepo;
-use crate::domain::book::Book;
+use std::sync::Arc;
 
 #[async_trait]
 pub trait BookUsecase {
@@ -11,7 +11,7 @@ pub trait BookUsecase {
 
 #[derive(Constructor)]
 pub struct BookUsecaseImpl {
-    book_repo: DynBookRepo,
+    book_repo: Arc<dyn BookRepo + Send + Sync>,
 }
 
 #[async_trait]

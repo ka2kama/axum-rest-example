@@ -24,9 +24,6 @@ impl UserRepo for UserRepoForDynamoDB {
                 "id".to_owned() => AttributeValue::S(id)
             }));
         let result = req.send().await.unwrap();
-        match result.item {
-            Some(item) => from_item(item).unwrap(),
-            None => None,
-        }
+        result.item.map(|item| from_item(item).unwrap())
     }
 }

@@ -1,0 +1,8 @@
+[tasks.run-dynamodb-local]
+command = "docker"
+args = ["compose", "up", "-d"]
+
+[tasks.run-local]
+command = "cargo"
+args = ["run"]
+dependencies = ["run-dynamodb-local"]
