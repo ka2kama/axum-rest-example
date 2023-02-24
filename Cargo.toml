@@ -15,6 +15,7 @@ either = { version = "1.8.1", default-features = false }
 once_cell = { version = "1.17.1", default-features = false }
 derive_more = { version = "0.99.17", default-features = false, features = ["constructor"]}
 serde = { version = "1.0.152", default-features = false, features = ["derive"] }
+serde_json = { version = "1.0.93", default-features = false }
 tokio = { version = "1.25", default-features = false, features = ["macros", "rt-multi-thread"] }
 async-trait =  { version = "0.1.64", default-features = false }
 config = { version = "0.13.3", default-features = false }
@@ -33,8 +34,9 @@ tower-http = { version = "0.4.0", default-features = false, features = [
     "sensitive-headers",
     "map-response-body",
     "set-header",
+    "catch-panic",
 ] }
-axum = { version = "0.6.7", default-features = false, features = ["tokio", "http2", "json"] }
+axum = { version = "0.6.8", default-features = false, features = ["tokio", "http2", "json"] }
 
 aws-config = { version = "0.54.1", default-features = false }
 aws-sdk-config = { version = "0.24.0", default-features = false }

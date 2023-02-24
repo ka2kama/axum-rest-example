@@ -9,9 +9,12 @@ mod server;
 mod usecase;
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() {
     tracing_subscriber::fmt::init();
-    let app_config = AppConfig::load()?;
-    let modules = Modules::init().await;
-    server::run(modules, app_config.http).await
+    let AppConfig {
+        http_config,
+        db_config,
+    } = AppConfig::load();
+    let modules = Modules::init(db_config).await;
+    server::run(modules, http_config).await
 }

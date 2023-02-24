@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use axum::body::HttpBody;
 use axum::extract::{Path, State};
+use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::{Json, Router};
@@ -23,7 +24,10 @@ where
 async fn get_user(
     Path(id): Path<String>,
     State(user_usecase): State<DynUserUsecase>,
-) -> impl IntoResponse {
-    let user = user_usecase.get_user(id).await;
-    Json(user)
+) -> Result<impl IntoResponse, StatusCode> {
+    let user = user_usecase
+        .get_user(id)
+        .await
+        .ok_or(StatusCode::NOT_FOUND)?;
+    Ok(Json(user))
 }

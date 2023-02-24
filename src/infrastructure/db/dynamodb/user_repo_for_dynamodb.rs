@@ -19,9 +19,9 @@ impl UserRepo for UserRepoForDynamoDB {
         let req = self
             .dynamodb_client
             .get_item()
-            .table_name("user")
+            .table_name("users")
             .set_key(Some(hashmap! {
-                "id".to_string() => AttributeValue::S(id)
+                "id".to_owned() => AttributeValue::S(id)
             }));
         let result = req.send().await.unwrap();
         match result.item {

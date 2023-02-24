@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use aws_sdk_config::Credentials;
 
+use crate::config::DbConfig;
 use crate::infrastructure::db::dynamodb::book_repo_for_dynamodb::BookRepoForDynamoDB;
 use crate::infrastructure::db::dynamodb::user_repo_for_dynamodb::UserRepoForDynamoDB;
 use crate::usecase::book_usecase::{BookUsecase, BookUsecaseImpl};
@@ -13,9 +14,9 @@ pub struct Modules {
 }
 
 impl Modules {
-    pub async fn init() -> Self {
+    pub async fn init(DbConfig { dynamo_endpoint }: DbConfig) -> Self {
         let config = aws_config::from_env()
-            .endpoint_url("http://localhost:8000")
+            .endpoint_url(dynamo_endpoint)
             .credentials_provider(Credentials::new(
                 "dummy-key",
                 "dummy-secret",

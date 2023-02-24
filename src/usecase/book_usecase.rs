@@ -17,7 +17,7 @@ pub struct BookUsecaseImpl {
 #[async_trait]
 impl BookUsecase for BookUsecaseImpl {
     async fn get_books(&self) -> anyhow::Result<Vec<Book>> {
-        let books = self.book_repo.get_books().await?;
+        let books = self.book_repo.get_books().await;
         Ok(books)
     }
 }

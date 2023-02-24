@@ -13,13 +13,12 @@ pub struct BookRepoForDynamoDB {
 
 #[async_trait::async_trait]
 impl BookRepo for BookRepoForDynamoDB {
-    async fn get_books(&self) -> anyhow::Result<Vec<Book>> {
+    async fn get_books(&self) -> Vec<Book> {
         let req = self.dynamodb_client.scan().table_name("books");
-        let result = req.send().await?;
-        let books = match result.items {
+        let result = req.send().await.unwrap();
+        match result.items {
             Some(items) if !items.is_empty() => from_items(items).unwrap(),
             _ => vec![],
-        };
-        Ok(books)
+        }
     }
 }

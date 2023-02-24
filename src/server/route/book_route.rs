@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
-use crate::domain::book::Book;
 use crate::server::error::AppError;
 use axum::body::HttpBody;
 use axum::extract::State;
+use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::{Json, Router};
 
@@ -21,7 +21,7 @@ where
         .with_state(book_usecase)
 }
 
-async fn books_index(book_usecase: State<DynBookUsecase>) -> Result<Json<Vec<Book>>, AppError> {
+async fn books_index(book_usecase: State<DynBookUsecase>) -> Result<impl IntoResponse, AppError> {
     let books = book_usecase.get_books().await?;
     Ok(Json(books))
 }
