@@ -2,7 +2,11 @@
 command = "docker"
 args = ["compose", "up", "-d"]
 
-[tasks.run-local]
+[tasks.build]
+command = "mold"
+args = ["-run", "cargo", "build"]
+
+[tasks.run]
 command = "cargo"
 args = ["run"]
-dependencies = ["run-dynamodb-local"]
+dependencies = ["build-local", "run-dynamodb-local"]

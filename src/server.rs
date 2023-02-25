@@ -1,4 +1,3 @@
-use std::borrow::Cow;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
@@ -9,12 +8,13 @@ use axum::{Router, Server};
 use tower::ServiceBuilder;
 use tower_http::catch_panic::CatchPanicLayer;
 use tower_http::request_id::{
-    MakeRequestUuid, PropagateRequestIdLayer, RequestId, SetRequestIdLayer,
+    MakeRequestId, PropagateRequestIdLayer, RequestId, SetRequestIdLayer,
 };
 use tower_http::timeout::TimeoutLayer;
 use tower_http::trace::{DefaultOnResponse, TraceLayer};
 use tower_http::{LatencyUnit, ServiceBuilderExt};
 use tracing::error_span;
+use uuid::Uuid;
 
 use crate::config::HttpConfig;
 use crate::module::Modules;
@@ -48,7 +48,7 @@ where
         // Mark the `Authorization` and `Cookie` headers as sensitive so it doesn't show in logs
         .sensitive_request_headers(sensitive_headers.clone())
         // set `x-request-id` header on all requests
-        .layer(SetRequestIdLayer::x_request_id(MakeRequestUuid))
+        .layer(SetRequestIdLayer::x_request_id(MakeRequestSimpleUuid))
         // propagate `x-request-id` headers from request to response
         .layer(PropagateRequestIdLayer::x_request_id())
         .layer(
@@ -56,16 +56,13 @@ where
             TraceLayer::new_for_http()
                 .make_span_with(|request: &Request<B>| {
                     // We get the request id from the extensions
-                    let request_id: Cow<'static, str> = match request
-                        .extensions()
+                    let extensions = request.extensions();
+                    let request_id = extensions
                         .get::<RequestId>()
                         .and_then(|id| id.header_value().to_str().ok())
-                    {
-                        Some(request_id) => request_id.replace('-', "").into(),
-                        None => "unknown".into(),
-                    };
+                        .unwrap_or("unknown");
                     // And then we put it along with other information into the `request` span
-                    error_span!("", request_id = request_id.as_ref())
+                    error_span!("", request_id = request_id)
                 })
                 .on_response(
                     DefaultOnResponse::new()
@@ -91,4 +88,20 @@ where
         .into_inner();
 
     app.layer(middleware_stack)
+}
+
+#[derive(Clone, Copy)]
+pub struct MakeRequestSimpleUuid;
+
+impl MakeRequestId for MakeRequestSimpleUuid {
+    fn make_request_id<B>(&mut self, req: &Request<B>) -> Option<RequestId> {
+        let request_id = match req.headers().get("x-request-id") {
+            Some(request_id) if !request_id.is_empty() => request_id.to_owned(),
+            _ => {
+                let simple_uuid = Uuid::new_v4().simple();
+                simple_uuid.to_string().parse().unwrap()
+            }
+        };
+        Some(RequestId::new(request_id))
+    }
 }
