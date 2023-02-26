@@ -15,18 +15,23 @@ pub struct Modules {
 
 impl Modules {
     pub async fn init(DbConfig { dynamo_endpoint }: DbConfig) -> Self {
-        let config = aws_config::from_env()
-            .endpoint_url(dynamo_endpoint)
-            .credentials_provider(Credentials::new(
-                "dummy-key",
-                "dummy-secret",
-                None,
-                None,
-                "dummy-provider",
-            ))
-            .region("ap-northeast-1")
-            .load()
-            .await;
+        let config = {
+            let mut config_loader = aws_config::from_env();
+            if cfg!(debug_assertions) {
+                config_loader = config_loader
+                    .endpoint_url(dynamo_endpoint)
+                    .credentials_provider(Credentials::new(
+                        "dummy-key",
+                        "dummy-secret",
+                        None,
+                        None,
+                        "dummy-provider",
+                    ))
+                    .region("ap-northeast-1");
+            }
+            config_loader.load()
+        }
+        .await;
         let dynamodb_client = Arc::new(aws_sdk_dynamodb::Client::new(&config));
         let user_repo = Arc::new(UserRepoForDynamoDB::new(Arc::clone(&dynamodb_client)));
         let book_repo = Arc::new(BookRepoForDynamoDB::new(Arc::clone(&dynamodb_client)));

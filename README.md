@@ -19,6 +19,7 @@ makers setup-dynamodb-local
 makers run
 ```
 
+## Release Build (not working yet)
 ```shell
 docker build --build-arg RUST_VERSION=$(cat ./rust-toolchain) . -t bookshelf --progress=plain
 docker container run -p 9000:9000 --env-file .env bookshelf 
