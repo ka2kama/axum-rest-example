@@ -9,4 +9,4 @@ args = ["-run", "cargo", "build"]
 [tasks.run]
 command = "cargo"
 args = ["run"]
-dependencies = ["build-local", "run-dynamodb-local"]
+dependencies = ["build", "run-dynamodb-local"]
