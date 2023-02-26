@@ -29,7 +29,12 @@ pub async fn run(modules: Modules, http_config: HttpConfig) {
         set_middleware_stack(routes, &http_config)
     };
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], http_config.port));
+    let ipv4 = if cfg!(debug_assertions) {
+        [127, 0, 0, 1]
+    } else {
+        [0, 0, 0, 0]
+    };
+    let addr = SocketAddr::from((ipv4, http_config.port));
     log::info!("listening on {addr}");
     Server::bind(&addr)
         .serve(app_router.into_make_service())
