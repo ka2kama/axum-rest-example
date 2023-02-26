@@ -1,5 +1,6 @@
 .env
 .envrc
+.cargo/config.toml
 
 ### VisualStudioCode template
 .vscode/*

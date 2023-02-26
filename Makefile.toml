@@ -1,12 +1,22 @@
-[tasks.run-dynamodb-local]
-command = "docker"
-args = ["compose", "up", "-d"]
+[env]
+RUST_LOG = "debug"
+RUST_BACKTRACE = 1
+RUST_LOG_STYLE = "always"
+
+[tasks.setup-dynamodb-local]
+script=[
+    "docker compose up -d",
+    "./create_table.sh",
+    "echo 'dynamodb-admin listening on http://localhost:8001'",
+]
 
 [tasks.build]
-command = "mold"
-args = ["-run", "cargo", "build"]
+command = "cargo"
+args = ["build"]
 
 [tasks.run]
+env_files = [ { path = ".env" } ]
 command = "cargo"
 args = ["run"]
-dependencies = ["build", "run-dynamodb-local"]
+dependencies = ["build"]
+watch = { watch = ["./src"] }
