@@ -5,6 +5,7 @@ use std::time::Duration;
 use axum::body::HttpBody;
 use axum::http::{header, HeaderValue, Request};
 use axum::{Router, Server};
+use tokio::signal;
 use tower::ServiceBuilder;
 use tower_http::catch_panic::CatchPanicLayer;
 use tower_http::request_id::{
@@ -38,6 +39,7 @@ pub async fn run(modules: Modules, http_config: HttpConfig) {
     tracing::info!("listening on {addr}");
     Server::bind(&addr)
         .serve(app_router.into_make_service())
+        .with_graceful_shutdown(shutdown_signal())
         .await
         .expect("server failed");
 }
@@ -93,6 +95,24 @@ where
         .into_inner();
 
     app.layer(middleware_stack)
+}
+
+async fn shutdown_signal() {
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = terminate => {},
+    }
+    tracing::warn!("signal received, starting graceful shutdown")
 }
 
 #[derive(Clone, Copy)]
