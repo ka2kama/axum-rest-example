@@ -44,7 +44,7 @@ impl AppConfig {
             http_config,
             db_config,
         };
-        log::debug!("{:#?}", app_config);
+        tracing::debug!("{:#?}", app_config);
         app_config
     }
 }

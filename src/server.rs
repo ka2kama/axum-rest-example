@@ -35,7 +35,7 @@ pub async fn run(modules: Modules, http_config: HttpConfig) {
         [0, 0, 0, 0]
     };
     let addr = SocketAddr::from((ipv4, http_config.port));
-    log::info!("listening on {addr}");
+    tracing::info!("listening on {addr}");
     Server::bind(&addr)
         .serve(app_router.into_make_service())
         .await

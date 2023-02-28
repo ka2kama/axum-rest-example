@@ -14,7 +14,7 @@ mod usecase;
 
 fn init_logger() {
     let fmt_layer = tracing_subscriber::fmt::layer()
-        .with_thread_ids(true)
+        .with_thread_names(true)
         .compact();
 
     let filter_layer = EnvFilter::try_from_default_env()
@@ -30,10 +30,13 @@ fn init_logger() {
 #[tokio::main]
 async fn main() {
     init_logger();
+
     let AppConfig {
         http_config,
         db_config,
     } = AppConfig::load();
+
     let modules = Modules::init(db_config).await;
+
     server::run(modules, http_config).await
 }
