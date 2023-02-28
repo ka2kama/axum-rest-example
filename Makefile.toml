@@ -1,22 +1,30 @@
 [env]
-RUST_LOG = "debug"
+RUST_LOG       = "debug"
 RUST_BACKTRACE = 1
 RUST_LOG_STYLE = "always"
 
 [tasks.setup-dynamodb-local]
-script=[
+script = [
     "docker compose up -d",
     "./create_table.sh",
     "echo 'dynamodb-admin listening on http://localhost:8001'",
 ]
 
+[tasks.fmt]
+script = [
+    "cargo fmt --all",
+    "dprint fmt --incremental=false",
+    "taplo fmt --force",
+]
+
 [tasks.build]
-command = "cargo"
-args = ["build"]
+command      = "cargo"
+args         = ["build"]
+dependencies = ["fmt"]
 
 [tasks.run]
-env_files = [ { path = ".env" } ]
-command = "cargo"
-args = ["run"]
+env_files    = [{ path = ".env" }]
+command      = "cargo"
+args         = ["run"]
 dependencies = ["build"]
-watch = { watch = ["./src"] }
+watch        = { watch = ["./src"] }

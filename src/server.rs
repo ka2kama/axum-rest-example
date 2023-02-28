@@ -50,23 +50,23 @@ where
 {
     let sensitive_headers: Arc<[_]> = vec![header::AUTHORIZATION, header::COOKIE].into();
     let middleware_stack = ServiceBuilder::new()
-        // Mark the `Authorization` and `Cookie` headers as sensitive so it doesn't show in logs
+        // mark the `Authorization` and `Cookie` headers as sensitive so it doesn't show in logs
         .sensitive_request_headers(sensitive_headers.clone())
         // set `x-request-id` header on all requests
         .layer(SetRequestIdLayer::x_request_id(MakeRequestSimpleUuid))
         // propagate `x-request-id` headers from request to response
         .layer(PropagateRequestIdLayer::x_request_id())
         .layer(
-            // Let's create a tracing span for each request
+            // create a tracing span for each request
             TraceLayer::new_for_http()
                 .make_span_with(|request: &Request<B>| {
-                    // We get the request id from the extensions
+                    // get the request id from the extensions
                     let extensions = request.extensions();
                     let request_id = extensions
                         .get::<RequestId>()
                         .and_then(|id| id.header_value().to_str().ok())
                         .unwrap_or("unknown");
-                    // And then we put it along with other information into the `request` span
+                    // put it along with other information into the `request` span
                     error_span!("", request_id = request_id)
                 })
                 .on_response(
@@ -77,7 +77,7 @@ where
         )
         .layer(CatchPanicLayer::custom(error::handle_panic))
         .sensitive_response_headers(sensitive_headers)
-        // Return an error after 30 seconds
+        // Return an error after timeout seconds
         .layer(TimeoutLayer::new(Duration::from_secs(
             http_config.timeout_seconds,
         )))

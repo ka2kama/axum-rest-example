@@ -1,5 +1,5 @@
 ARG RUST_VERSION
-FROM rust:${RUST_VERSION} as builder
+FROM rust:${RUST_VERSION} AS builder
 
 WORKDIR /app
 COPY Cargo.toml Cargo.lock rust-toolchain ./

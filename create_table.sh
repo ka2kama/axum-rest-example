@@ -11,10 +11,10 @@ aws dynamodb create-table --table-name users \
     --attribute-definitions AttributeName=id,AttributeType=S \
     --key-schema AttributeName=id,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
-    --endpoint-url "${endpoint_url}"
+    --endpoint-url "${endpoint_url}" | cat
 
 aws dynamodb create-table --table-name books \
     --attribute-definitions AttributeName=id,AttributeType=S \
     --key-schema AttributeName=id,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 \
-    --endpoint-url "${endpoint_url}"
+    --endpoint-url "${endpoint_url}" | cat
