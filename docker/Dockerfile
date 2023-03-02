@@ -2,10 +2,10 @@ ARG RUST_VERSION
 FROM rust:${RUST_VERSION} AS builder
 
 WORKDIR /app
-COPY Cargo.toml Cargo.lock rust-toolchain ./
+COPY ../Cargo.toml Cargo.lock rust-toolchain ./
 RUN mkdir ./src && echo "fn main(){}" > ./src/main.rs
 RUN cargo build --release && rm ./target/release/deps/bookshelf*
-COPY src ./src
+COPY ../src ./src
 RUN cargo build --release
 
 FROM gcr.io/distroless/cc

@@ -1,25 +1,26 @@
 # axum-rest-example
 
-## Prerequisites
+## Setup Local Environment
 
 ### Install tools
 
 - [rustup](https://www.rust-lang.org/ja/tools/install)
-- [cargo-make (task runner with a simple toml based configuration file)](https://github.com/sagiegurari/cargo-make#installation)
-- [taplo (rich TOML toolkit)](https://taplo.tamasfe.dev/cli/installation/cargo.html)
-- [dprint (code formatter for json, markdown, Dockerfile, etc.)](https://dprint.dev/install/)
+- [npm (for install formatters locally)](https://nodejs.org/ja/download/)
 
 ### Execute only the first time
 
 ```shell
-cp .env-template .env
+# install cargo-make (https://github.com/sagiegurari/cargo-make)
+cargo install --force cargo-make
+
+makers setup-local
 ```
 
 ## Run Locally
 
 ```shell
 # run and initialize dynamodb-local if not yet
-makers setup-dynamodb-local
+makers setup-db
 
 # run application with hot reload
 makers run

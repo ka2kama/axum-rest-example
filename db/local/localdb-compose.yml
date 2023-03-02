@@ -9,7 +9,7 @@ services:
     volumes:
       - dynamodb-local-data:/data
     ports:
-    - "8000:8000"
+      - "8000:8000"
   dynamodb-admin:
     image: aaronshaf/dynamodb-admin:latest
     container_name: dynamodb-admin

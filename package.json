@@ -1,0 +1,8 @@
+{
+    "devDependencies": {
+        "@taplo/cli": "0.5.2",
+        "dprint": "0.34.5",
+        "prettier": "2.8.4",
+        "prettier-plugin-sh": "0.12.8"
+    }
+}

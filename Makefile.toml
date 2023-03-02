@@ -1,33 +1,68 @@
 [config]
+# Skip loading of all core tasks which saves up a bit on toml parsing and task creation
 skip_core_tasks = true
+# Skips loading Git related environment variables
+skip_git_env_info = true
+# Skips loading rust related environment variables
+skip_rust_env_info = true
+# Skips loading the current crate related environment variables
+skip_crate_env_info = true
 
 [env]
-RUST_LOG       = "info"
+RUST_LOG = "info"
 RUST_BACKTRACE = 1
 RUST_LOG_STYLE = "always"
 
-[tasks.setup-dynamodb-local]
-script = [
-    "docker compose up -d",
-    "./create_table.sh",
-    "echo 'dynamodb-admin listening on http://localhost:8001'",
-]
+[tasks.setup-local]
+script = '''
+#!/usr/bin/env bash
+set -eu
+
+# install formatters for this project
+npm install
+
+cp ${CARGO_MAKE_WORKING_DIRECTORY}/.env-template ${CARGO_MAKE_WORKING_DIRECTORY}/.env
+'''
+
+[tasks.setup-db]
+script = '''
+#!/usr/bin/env bash
+set -eu
+
+docker compose -f ${CARGO_MAKE_WORKING_DIRECTORY}/db/local/localdb-compose.yml up -d
+${CARGO_MAKE_WORKING_DIRECTORY}/db/local/create-table.sh
+echo 'dynamodb-admin listening on http://localhost:8001'
+'''
 
 [tasks.fmt]
-script = [
-    "cargo fmt --all",
-    "dprint fmt --incremental=false",
-    "taplo fmt --force",
-]
+script = '''
+#!/usr/bin/env bash
+set -eu
+
+export PATH="${CARGO_MAKE_WORKING_DIRECTORY}/node_modules/.bin:$PATH"
+
+# format Rust code
+cargo fmt --all
+
+# format Cargo.toml
+RUST_LOG=WARN taplo fmt --force --config ${CARGO_MAKE_WORKING_DIRECTORY}/fmt/.taplo.toml
+
+# format other files
+dprint fmt --incremental=false --config ${CARGO_MAKE_WORKING_DIRECTORY}/fmt/.dprint.json
+prettier --write . \
+    --config ${CARGO_MAKE_WORKING_DIRECTORY}/fmt/.prettierrc.toml \
+    --ignore-path ${CARGO_MAKE_WORKING_DIRECTORY}/fmt/.prettierignore \
+    > /dev/null
+'''
 
 [tasks.build]
-command      = "cargo"
-args         = ["build"]
+command = "cargo"
+args = ["build"]
 dependencies = ["fmt"]
 
 [tasks.run]
-env_files    = [{ path = ".env" }]
-command      = "cargo"
-args         = ["run"]
+env_files = [{ path = ".env" }]
+command = "cargo"
+args = ["run"]
 dependencies = ["build"]
-watch        = { watch = ["./src", "Cargo.toml"] }
+watch = { watch = ["./src", "Cargo.toml"] }
