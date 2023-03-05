@@ -1,0 +1,7 @@
+# Ignore everything
+*
+
+!Cargo.toml
+!Cargo.lock
+!rust-toolchain
+!src/

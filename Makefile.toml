@@ -7,13 +7,22 @@ skip_git_env_info = true
 skip_rust_env_info = true
 # Skips loading the current crate related environment variables
 skip_crate_env_info = true
+init_task = "init"
 
 [env]
-RUST_LOG = "info"
+RUST_LOG = "debug"
 RUST_BACKTRACE = 1
 RUST_LOG_STYLE = "always"
 
+[tasks.init]
+script = '''
+export PATH="${CARGO_MAKE_WORKING_DIRECTORY}/.cargo/bin:${CARGO_MAKE_WORKING_DIRECTORY}/node_modules/.bin:$PATH"
+'''
+
 [tasks.setup-local]
+run_task = { name = ["install-tools", "setup-db"] }
+
+[tasks.install-tools]
 script = '''
 #!/usr/bin/env bash
 set -eu
@@ -24,22 +33,26 @@ npm install
 cp ${CARGO_MAKE_WORKING_DIRECTORY}/.env-template ${CARGO_MAKE_WORKING_DIRECTORY}/.env
 '''
 
+[tasks.install-scchace]
+condition_script = ["type sccache"]
+command = "cargo"
+args = ["install", "sccache"]
+
 [tasks.setup-db]
 script = '''
-#!/usr/bin/env bash
-set -eu
-
 docker compose -f ${CARGO_MAKE_WORKING_DIRECTORY}/db/local/localdb-compose.yml up -d
 ${CARGO_MAKE_WORKING_DIRECTORY}/db/local/create-table.sh
 echo 'dynamodb-admin listening on http://localhost:8001'
 '''
 
+[tasks.stop-db]
+script = '''
+docker compose -f ${CARGO_MAKE_WORKING_DIRECTORY}/db/local/localdb-compose.yml down
+'''
+
 [tasks.fmt]
 script = '''
-#!/usr/bin/env bash
-set -eu
-
-export PATH="${CARGO_MAKE_WORKING_DIRECTORY}/node_modules/.bin:$PATH"
+set -eux
 
 # format Rust code
 cargo fmt --all
@@ -60,9 +73,22 @@ command = "cargo"
 args = ["build"]
 dependencies = ["fmt"]
 
+[tasks.build-release]
+extend = "build"
+args = ["build", "--release"]
+
+[tasks.publish]
+script = '''
+docker build \
+    --build-arg RUSTUP_TOOLCHAIN=$(cat ${CARGO_MAKE_WORKING_DIRECTORY}/rust-toolchain) \
+    -t bookshelf \
+    --progress=plain \
+    .
+'''
+
 [tasks.run]
-env_files = [{ path = ".env" }]
+env_files = [{ path = "${CARGO_MAKE_WORKING_DIRECTORY}/.env" }]
 command = "cargo"
 args = ["run"]
 dependencies = ["build"]
-watch = { watch = ["./src", "Cargo.toml"] }
+watch = { watch = ["${CARGO_MAKE_WORKING_DIRECTORY}/Cargo.toml", "${CARGO_MAKE_WORKING_DIRECTORY}/src"] }

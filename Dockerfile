@@ -1,11 +1,13 @@
-ARG RUST_VERSION
-FROM rust:${RUST_VERSION} AS builder
+ARG RUSTUP_TOOLCHAIN
+FROM rust:${RUSTUP_TOOLCHAIN} AS builder
 
+ARG RUSTUP_TOOLCHAIN
+ENV RUSTUP_TOOLCHAIN=${RUSTUP_TOOLCHAIN}
 WORKDIR /app
-COPY ../Cargo.toml Cargo.lock rust-toolchain ./
+COPY Cargo.toml Cargo.lock ./
 RUN mkdir ./src && echo "fn main(){}" > ./src/main.rs
 RUN cargo build --release && rm ./target/release/deps/bookshelf*
-COPY ../src ./src
+COPY src ./src
 RUN cargo build --release
 
 FROM gcr.io/distroless/cc
