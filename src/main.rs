@@ -29,7 +29,7 @@ fn init_logger() {
 
 #[tokio::main]
 async fn main() {
-    init_logger();
+    // init_logger();
 
     let AppConfig {
         http_config,

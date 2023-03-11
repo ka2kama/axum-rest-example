@@ -9,7 +9,7 @@ skip_rust_env_info = true
 skip_crate_env_info = true
 
 [env.development]
-RUST_LOG = "debug"
+RUST_LOG = "debug,hyper=info,tower_http=info"
 RUST_BACKTRACE = 1
 RUST_LOG_STYLE = "always"
 DYNAMODB_LOCAL_PORT = 28000
@@ -89,4 +89,3 @@ env_files = [{ path = "./.env" }]
 command = "cargo"
 args = ["run"]
 dependencies = ["fmt"]
-watch = { watch = ["./Cargo.toml", "./src"] }

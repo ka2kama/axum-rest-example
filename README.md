@@ -22,7 +22,7 @@ makers install-tools
 # run and initialize dynamodb-local if not yet
 makers setup-local
 
-# run application with hot reload
+# run application
 makers run
 ```
 
