@@ -1,6 +1,4 @@
 printWidth = 120
 tabWidth = 4
 plugins = ["prettier-plugin-sh"]
-overrides = [
-    { files = ["*.yaml", "*.yml"], options = { tabWidth = 2 } },
-]
+overrides = [{ files = ["*.yaml", "*.yml"], options = { tabWidth = 2 } }]

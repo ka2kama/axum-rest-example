@@ -7,20 +7,13 @@ skip_git_env_info = true
 skip_rust_env_info = true
 # Skips loading the current crate related environment variables
 skip_crate_env_info = true
-init_task = "init"
 
-[env]
+[env.development]
 RUST_LOG = "debug"
 RUST_BACKTRACE = 1
 RUST_LOG_STYLE = "always"
-
-[tasks.init]
-script = '''
-export PATH="${CARGO_MAKE_WORKING_DIRECTORY}/.cargo/bin:${CARGO_MAKE_WORKING_DIRECTORY}/node_modules/.bin:$PATH"
-'''
-
-[tasks.setup-local]
-run_task = { name = ["install-tools", "setup-db"] }
+DYNAMODB_LOCAL_PORT = 28000
+DYNAMODB_ADMIN_PORT = 28001
 
 [tasks.install-tools]
 script = '''
@@ -30,41 +23,46 @@ set -eu
 # install formatters for this project
 npm install
 
-cp ${CARGO_MAKE_WORKING_DIRECTORY}/.env-template ${CARGO_MAKE_WORKING_DIRECTORY}/.env
+cp ./.env-template ./.env
 '''
 
-[tasks.install-scchace]
-condition_script = ["type sccache"]
-command = "cargo"
-args = ["install", "sccache"]
-
-[tasks.setup-db]
+[tasks.setup-local]
 script = '''
-docker compose -f ${CARGO_MAKE_WORKING_DIRECTORY}/db/local/localdb-compose.yml up -d
-${CARGO_MAKE_WORKING_DIRECTORY}/db/local/create-table.sh
-echo 'dynamodb-admin listening on http://localhost:8001'
+docker compose -p bookshelf -f ./local/localdb-compose.yml up -d
+./local/create-table.sh
+echo "dynamodb-admin listening on http://localhost:${DYNAMODB_ADMIN_PORT}"
 '''
 
-[tasks.stop-db]
+[tasks.destroy-local]
 script = '''
-docker compose -f ${CARGO_MAKE_WORKING_DIRECTORY}/db/local/localdb-compose.yml down
+docker compose -p bookshelf -f ./local/localdb-compose.yml down
+'''
+
+[tasks.lint]
+description = "Run linters"
+script = '''
+export PATH="${CARGO_MAKE_WORKING_DIRECTORY}/node_modules/.bin:$PATH"
+cargo fmt --all -- --check
+dprint check --config ./fmt/.dprint.json
+prettier --check . \
+    --config ./fmt/.prettierrc.toml \
+    --ignore-path ./fmt/.prettierignore
+
+cargo clippy --all-targets --all-features -- -D warnings -D clippy::all
 '''
 
 [tasks.fmt]
 script = '''
-set -eux
+export PATH="${CARGO_MAKE_WORKING_DIRECTORY}/node_modules/.bin:$PATH"
 
 # format Rust code
 cargo fmt --all
 
-# format Cargo.toml
-RUST_LOG=WARN taplo fmt --force --config ${CARGO_MAKE_WORKING_DIRECTORY}/fmt/.taplo.toml
-
 # format other files
-dprint fmt --incremental=false --config ${CARGO_MAKE_WORKING_DIRECTORY}/fmt/.dprint.json
+dprint fmt --incremental=false --config ./fmt/.dprint.json
 prettier --write . \
-    --config ${CARGO_MAKE_WORKING_DIRECTORY}/fmt/.prettierrc.toml \
-    --ignore-path ${CARGO_MAKE_WORKING_DIRECTORY}/fmt/.prettierignore \
+    --config ./fmt/.prettierrc.toml \
+    --ignore-path ./fmt/.prettierignore \
     > /dev/null
 '''
 
@@ -77,18 +75,18 @@ dependencies = ["fmt"]
 extend = "build"
 args = ["build", "--release"]
 
-[tasks.publish]
+[tasks.publish-local]
 script = '''
 docker build \
-    --build-arg RUSTUP_TOOLCHAIN=$(cat ${CARGO_MAKE_WORKING_DIRECTORY}/rust-toolchain) \
+    --build-arg RUSTUP_TOOLCHAIN=$(cat ./rust-toolchain) \
     -t bookshelf \
     --progress=plain \
     .
 '''
 
 [tasks.run]
-env_files = [{ path = "${CARGO_MAKE_WORKING_DIRECTORY}/.env" }]
+env_files = [{ path = "./.env" }]
 command = "cargo"
 args = ["run"]
-dependencies = ["build"]
-watch = { watch = ["${CARGO_MAKE_WORKING_DIRECTORY}/Cargo.toml", "${CARGO_MAKE_WORKING_DIRECTORY}/src"] }
+dependencies = ["fmt"]
+watch = { watch = ["./Cargo.toml", "./src"] }

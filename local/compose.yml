@@ -5,20 +5,21 @@ services:
     image: amazon/dynamodb-local:latest
     user: root
     container_name: dynamodb-local
-    command: -jar DynamoDBLocal.jar -sharedDb -dbPath /data
+    command: -jar DynamoDBLocal.jar -sharedDb -dbPath /data -port ${DYNAMODB_LOCAL_PORT}
     volumes:
       - dynamodb-local-data:/data
     ports:
-      - "8000:8000"
+      - "${DYNAMODB_LOCAL_PORT}:${DYNAMODB_LOCAL_PORT}"
   dynamodb-admin:
     image: aaronshaf/dynamodb-admin:latest
     container_name: dynamodb-admin
     ports:
-      - "8001:8001"
+      - "${DYNAMODB_ADMIN_PORT}:${DYNAMODB_ADMIN_PORT}"
     depends_on:
       - dynamodb-local
     environment:
-      DYNAMO_ENDPOINT: http://dynamodb-local:8000
+      DYNAMO_ENDPOINT: http://dynamodb-local:${DYNAMODB_LOCAL_PORT}
+      PORT: ${DYNAMODB_ADMIN_PORT}
 
 volumes:
   dynamodb-local-data:

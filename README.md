@@ -13,14 +13,14 @@
 # install cargo-make (https://github.com/sagiegurari/cargo-make)
 cargo install --force cargo-make
 
-makers setup-local
+makers install-tools
 ```
 
 ## Run Locally
 
 ```shell
 # run and initialize dynamodb-local if not yet
-makers setup-db
+makers setup-local
 
 # run application with hot reload
 makers run
@@ -29,6 +29,6 @@ makers run
 ## Release Build (not working yet)
 
 ```shell
-makers publish
+makers publish-local
 docker container run -p 9000:9000 --env-file .env bookshelf
 ```
