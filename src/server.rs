@@ -23,7 +23,6 @@ use crate::module::Modules;
 mod error;
 pub mod route;
 
-#[inline]
 pub async fn run(modules: Modules, http_config: HttpConfig) {
     let app_router = {
         let routes = route::accumulate(modules);
@@ -36,7 +35,7 @@ pub async fn run(modules: Modules, http_config: HttpConfig) {
         [0, 0, 0, 0]
     };
     let addr = SocketAddr::from((ipv4, http_config.port));
-    tracing::info!("listening on {addr}");
+    tracing::info!("listening on http://{addr}");
     Server::bind(&addr)
         .serve(app_router.into_make_service())
         .with_graceful_shutdown(shutdown_signal())

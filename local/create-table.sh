@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
-export AWS_ACCESS_KEY_ID=dummy-key
-export AWS_SECRET_ACCESS_KEY=dummy-secret
+export AWS_ACCESS_KEY_ID=dummyKey
+export AWS_SECRET_ACCESS_KEY=dummySecret
 export AWS_DEFAULT_REGION=ap-northeast-1
 
 endpoint_url=http://localhost:${DYNAMODB_LOCAL_PORT}

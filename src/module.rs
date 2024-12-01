@@ -21,8 +21,8 @@ impl Modules {
                 config_loader = config_loader
                     .endpoint_url(dynamo_endpoint)
                     .credentials_provider(Credentials::new(
-                        "dummy-key",
-                        "dummy-secret",
+                        "dummyKey",
+                        "dummySecret",
                         None,
                         None,
                         "dummy-provider",
@@ -32,7 +32,18 @@ impl Modules {
             config_loader.load()
         }
         .await;
+
         let dynamodb_client = Arc::new(aws_sdk_dynamodb::Client::new(&config));
+
+        // connectivity test
+        {
+            let tables_output = dynamodb_client.list_tables().send().await.unwrap();
+            tables_output
+                .table_names()
+                .into_iter()
+                .for_each(|ts| println!("{:?}", ts));
+        }
+
         let user_repo = Arc::new(UserRepoForDynamoDB::new(Arc::clone(&dynamodb_client)));
         let book_repo = Arc::new(BookRepoForDynamoDB::new(Arc::clone(&dynamodb_client)));
 

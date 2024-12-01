@@ -28,14 +28,14 @@ cp ./.env-template ./.env
 
 [tasks.setup-local]
 script = '''
-docker compose -p bookshelf -f ./local/localdb-compose.yml up -d
+docker compose -p bookshelf -f ./local/compose.yml up -d
 ./local/create-table.sh
 echo "dynamodb-admin listening on http://localhost:${DYNAMODB_ADMIN_PORT}"
 '''
 
 [tasks.destroy-local]
 script = '''
-docker compose -p bookshelf -f ./local/localdb-compose.yml down
+docker compose -p bookshelf -f ./local/compose.yml down
 '''
 
 [tasks.lint]
