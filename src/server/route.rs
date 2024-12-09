@@ -1,4 +1,4 @@
-use axum::Router;
+use axum::{response::Redirect, routing::get, Router};
 
 use crate::module::Modules;
 
@@ -13,6 +13,7 @@ pub fn accumulate(
     }: Modules,
 ) -> Router {
     Router::new()
+        .route("/", get(|| async { Redirect::to("/books") }))
         .nest("/health", health_check_route::route())
         .nest("/users", user_route::route(user_usecase))
         .nest("/books", book_route::route(book_usecase))

@@ -28,6 +28,9 @@ cp ./.env-template ./.env
 
 [tasks.setup-local]
 script = '''
+#!/usr/bin/env bash
+set -eu
+
 docker compose -p bookshelf -f ./local/compose.yml up -d
 ./local/create-table.sh
 echo "dynamodb-admin listening on http://localhost:${DYNAMODB_ADMIN_PORT}"

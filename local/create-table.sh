@@ -7,6 +7,8 @@ export AWS_DEFAULT_REGION=ap-northeast-1
 
 endpoint_url=http://localhost:${DYNAMODB_LOCAL_PORT}
 
+aws dynamodb list-tables --endpoint-url "${endpoint_url}"
+
 TABLE_NAME=users
 if aws dynamodb describe-table --table-name ${TABLE_NAME} --endpoint-url "${endpoint_url}" > /dev/null 2>&1; then
     echo "Table ${TABLE_NAME} already exists. Skipping creation."
