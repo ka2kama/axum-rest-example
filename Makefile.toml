@@ -32,13 +32,14 @@ script = '''
 set -eu
 
 docker compose -p bookshelf -f ./local/compose.yml up -d
+sleep 3
 ./local/create-table.sh
 echo "dynamodb-admin listening on http://localhost:${DYNAMODB_ADMIN_PORT}"
 '''
 
 [tasks.destroy-local]
 script = '''
-docker compose -p bookshelf -f ./local/compose.yml down
+docker compose -p bookshelf -f ./local/compose.yml down --volumes --remove-orphans
 '''
 
 [tasks.lint]
