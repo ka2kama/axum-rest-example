@@ -1,6 +1,6 @@
-use axum::{response::Redirect, routing::get, Router};
-
 use crate::module::Modules;
+use axum::response::Html;
+use axum::{routing::get, Router};
 
 pub mod book_route;
 pub mod health_check_route;
@@ -13,7 +13,7 @@ pub fn accumulate(
     }: Modules,
 ) -> Router {
     Router::new()
-        .route("/", get(|| async { Redirect::to("/books") }))
+        .route("/", get(|| async { Html("<h1>hello world!</h1>") }))
         .nest("/health", health_check_route::route())
         .nest("/users", user_route::route(user_usecase))
         .nest("/books", book_route::route(book_usecase))

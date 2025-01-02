@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use crate::server::error::AppError;
-use axum::body::HttpBody;
 use axum::extract::State;
 use axum::response::IntoResponse;
 use axum::routing::get;
@@ -11,9 +10,8 @@ use crate::usecase::book_usecase::BookUsecase;
 
 type DynBookUsecase = Arc<dyn BookUsecase + Send + Sync>;
 
-pub fn route<S, B>(book_usecase: DynBookUsecase) -> Router<S, B>
+pub fn route<S>(book_usecase: DynBookUsecase) -> Router<S>
 where
-    B: HttpBody + Send + 'static,
     S: Clone + Send + Sync + 'static,
 {
     Router::new()

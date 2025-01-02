@@ -2,9 +2,8 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
 
-use axum::body::HttpBody;
 use axum::http::{header, HeaderValue, Request};
-use axum::{Router, Server};
+use axum::Router;
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_http::catch_panic::CatchPanicLayer;
@@ -35,9 +34,9 @@ pub async fn run(modules: Modules, http_config: HttpConfig) -> anyhow::Result<()
         [0, 0, 0, 0]
     };
     let addr = SocketAddr::from((ipv4, http_config.port));
-    tracing::info!("listening on http://{addr}");
-    let _ = Server::bind(&addr)
-        .serve(app_router.into_make_service())
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+    tracing::info!("listening on http://{}", listener.local_addr()?);
+    axum::serve(listener, app_router.into_make_service())
         .with_graceful_shutdown(shutdown_signal())
         .await?;
 
@@ -45,10 +44,9 @@ pub async fn run(modules: Modules, http_config: HttpConfig) -> anyhow::Result<()
 }
 
 #[inline]
-fn set_middleware_stack<S, B>(app: Router<S, B>, http_config: &HttpConfig) -> Router<S, B>
+fn set_middleware_stack<S>(app: Router<S>, http_config: &HttpConfig) -> Router<S>
 where
     S: Clone + Send + Sync + 'static,
-    B: HttpBody + Send + 'static,
 {
     let sensitive_headers: Arc<[_]> = vec![header::AUTHORIZATION, header::COOKIE].into();
     let middleware_stack = ServiceBuilder::new()
@@ -61,7 +59,7 @@ where
         .layer(
             // create a tracing span for each request
             TraceLayer::new_for_http()
-                .make_span_with(|request: &Request<B>| {
+                .make_span_with(|request: &Request<_>| {
                     // get the request id from the extensions
                     let extensions = request.extensions();
                     let request_id = extensions
@@ -84,7 +82,7 @@ where
             http_config.timeout_seconds,
         )))
         // Box the response body so it implements `Default` which is required by axum
-        .map_response_body(axum::body::boxed)
+        .map_response_body(axum::body::Body::new)
         // Compress response bodies
         .compression()
         // Set a `Content-Type` if there isn't one already.
@@ -96,8 +94,13 @@ where
 
     app.layer(middleware_stack)
 }
-
 async fn shutdown_signal() {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
+
     #[cfg(unix)]
     let terminate = async {
         signal::unix::signal(signal::unix::SignalKind::terminate())
@@ -110,9 +113,11 @@ async fn shutdown_signal() {
     let terminate = std::future::pending::<()>();
 
     tokio::select! {
+        _ = ctrl_c => {},
         _ = terminate => {},
     }
-    tracing::warn!("signal received, starting graceful shutdown")
+
+    tracing::warn!("signal received, starting graceful shutdown");
 }
 
 #[derive(Clone, Copy)]

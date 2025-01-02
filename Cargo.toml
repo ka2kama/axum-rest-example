@@ -16,7 +16,7 @@ itertools = { version = "0.14.0", default-features = false, features = ["use_all
 maplit = { version = "1.0.2", default-features = false }
 once_cell = { version = "1.20.2", default-features = false }
 
-config = { version = "0.13.4", default-features = false }
+config = { version = "0.15.4", default-features = false }
 serde = { version = "1.0.214", default-features = false, features = ["derive"] }
 serde_json = { version = "1.0.132", default-features = false }
 uuid = { version = "1.11.0", default-features = false }
@@ -27,9 +27,9 @@ tokio = { version = "1.41", default-features = false, features = ["macros", "rt-
 tracing = { version = "0.1.37", default-features = false }
 tracing-subscriber = { version = "0.3.16", default-features = false, features = ["fmt", "ansi", "env-filter"] }
 
-axum = { version = "0.6.20", default-features = false, features = ["tokio", "http2", "json"] }
-tower = { version = "0.4.13", default-features = false }
-tower-http = { version = "0.4.4", default-features = false, features = ["util", "request-id", "compression-br", "timeout", "trace", "sensitive-headers", "map-response-body", "set-header", "catch-panic"] }
+axum = { version = "0.8.1", default-features = false, features = ["tokio", "http1", "http2", "json"] }
+tower = { version = "0.5.2", default-features = false }
+tower-http = { version = "0.6.2", default-features = false, features = ["util", "request-id", "compression-br", "timeout", "trace", "sensitive-headers", "map-response-body", "set-header", "catch-panic"] }
 
 aws-config = { version = "0.54.1", default-features = false, features = ["rustls"] }
 aws-sdk-config = { version = "0.24.0", default-features = false, features = ["rustls"] }

@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use axum::body::HttpBody;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -11,13 +10,12 @@ use crate::usecase::user_usecase::UserUsecase;
 
 type DynUserUsecase = Arc<dyn UserUsecase + Send + Sync>;
 
-pub fn route<S, B>(user_usecase: DynUserUsecase) -> Router<S, B>
+pub fn route<S>(user_usecase: DynUserUsecase) -> Router<S>
 where
-    B: HttpBody + Send + 'static,
     S: Clone + Send + Sync + 'static,
 {
     Router::new()
-        .route("/:id", get(get_user))
+        .route("/{id}", get(get_user))
         .with_state(user_usecase)
 }
 
