@@ -30,6 +30,7 @@ fn init_logger() {
 
 async fn try_main(_args: Vector<String>) -> anyhow::Result<()> {
     init_logger();
+
     let AppConfig {
         http_config,
         db_config,
@@ -37,7 +38,7 @@ async fn try_main(_args: Vector<String>) -> anyhow::Result<()> {
 
     let modules = Modules::init(db_config).await?;
 
-    let _ = server::run(modules, http_config).await?;
+    server::run(modules, http_config).await?;
 
     Ok(())
 }

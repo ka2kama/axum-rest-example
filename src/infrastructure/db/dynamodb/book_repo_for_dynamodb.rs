@@ -1,11 +1,9 @@
-use std::sync::Arc;
-
-use derive_more::Constructor;
-use im_rc::{vector, Vector};
-use serde_dynamo::from_items;
-
 use crate::domain::book::book_repo::BookRepo;
 use crate::domain::book::Book;
+use crate::infrastructure::db::dynamodb::deserializer::book_deserializer;
+use derive_more::Constructor;
+use im_rc::Vector;
+use std::sync::Arc;
 
 #[derive(Constructor)]
 pub struct BookRepoForDynamoDB {
@@ -16,10 +14,12 @@ pub struct BookRepoForDynamoDB {
 impl BookRepo for BookRepoForDynamoDB {
     async fn get_books(&self) -> Vector<Book> {
         let req = self.dynamodb_client.scan().table_name("books");
-        let result = req.send().await.unwrap();
-        match result.items {
-            Some(items) if !items.is_empty() => from_items(items).unwrap().into(),
-            _ => vector![],
-        }
+        let result = req.send().await.expect("request failed");
+        let items = result.items.unwrap_or_default();
+        items
+            .into_iter()
+            .map(book_deserializer::deserialize_book)
+            .collect::<Result<_, _>>()
+            .expect("convertion failed")
     }
 }

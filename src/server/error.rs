@@ -3,7 +3,10 @@ use std::any::Any;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 
-pub fn handle_panic(_: Box<dyn Any + Send + 'static>) -> Response {
+pub fn handle_panic(e: Box<dyn Any + Send + 'static>) -> Response {
+    if let Ok(e) = e.downcast::<String>() {
+        tracing::error!("{}", e);
+    }
     (StatusCode::INTERNAL_SERVER_ERROR, "server error").into_response()
 }
 

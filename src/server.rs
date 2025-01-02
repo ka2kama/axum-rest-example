@@ -36,7 +36,8 @@ pub async fn run(modules: Modules, http_config: HttpConfig) -> anyhow::Result<()
     let addr = SocketAddr::from((ipv4, http_config.port));
     let listener = tokio::net::TcpListener::bind(addr).await?;
     tracing::info!("listening on http://{}", listener.local_addr()?);
-    axum::serve(listener, app_router.into_make_service())
+
+    axum::serve(listener, app_router)
         .with_graceful_shutdown(shutdown_signal())
         .await?;
 

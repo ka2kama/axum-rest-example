@@ -3,10 +3,10 @@ use std::sync::Arc;
 use aws_sdk_dynamodb::types::AttributeValue;
 use derive_more::Constructor;
 use maplit::hashmap;
-use serde_dynamo::from_item;
 
 use crate::domain::user::user_repo::UserRepo;
 use crate::domain::user::User;
+use crate::infrastructure::db::dynamodb::deserializer::user_deserializer::deserialize_user;
 
 #[derive(Constructor)]
 pub struct UserRepoForDynamoDB {
@@ -23,7 +23,9 @@ impl UserRepo for UserRepoForDynamoDB {
             .set_key(Some(hashmap! {
                 "id".to_owned() => AttributeValue::S(id)
             }));
-        let result = req.send().await.unwrap();
-        result.item.map(|item| from_item(item).unwrap())
+        let result = req.send().await.expect("request failed");
+        result
+            .item
+            .map(|item| deserialize_user(item).expect("conversion failed"))
     }
 }
