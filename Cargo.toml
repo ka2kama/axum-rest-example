@@ -2,16 +2,17 @@
 name = "bookshelf"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.83.0"
 
 [profile.release]
-strip = "debuginfo"
+strip = "none"
+debug = 1
 overflow-checks = true
 
 [dependencies]
 anyhow = { version = "1.0.92", default-features = false, features = ["std", "backtrace"] }
 derive_more = { version = "0.99.18", default-features = false, features = ["constructor"] }
-itertools = { version = "0.10.5", default-features = false }
+im-rc = { version = "15.1.0", default-features = false, features = ["serde"] }
+itertools = { version = "0.10.5", default-features = false, features = ["use_alloc"] }
 maplit = { version = "1.0.2", default-features = false }
 once_cell = { version = "1.20.2", default-features = false }
 

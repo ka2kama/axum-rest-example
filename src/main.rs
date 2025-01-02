@@ -1,3 +1,4 @@
+use im_rc::Vector;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::EnvFilter;
@@ -27,16 +28,25 @@ fn init_logger() {
         .init();
 }
 
-#[tokio::main]
-async fn main() {
+async fn try_main(_args: Vector<String>) -> anyhow::Result<()> {
     init_logger();
-
     let AppConfig {
         http_config,
         db_config,
-    } = AppConfig::load();
+    } = AppConfig::load()?;
 
-    let modules = Modules::init(db_config).await;
+    let modules = Modules::init(db_config).await?;
 
-    server::run(modules, http_config).await
+    let _ = server::run(modules, http_config).await?;
+
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() {
+    let args: Vector<String> = std::env::args().collect();
+    if let Err(err) = try_main(args).await {
+        tracing::error!("{:#}", err);
+        panic!("{:?}", err);
+    }
 }

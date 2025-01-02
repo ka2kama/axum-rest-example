@@ -81,8 +81,10 @@ args = ["build", "--release"]
 
 [tasks.publish-local]
 script = '''
+RUSTUP_TOOLCHAIN=$(cat ./rust-toolchain.toml | dasel -r toml 'toolchain.channel' | sed "s/^'//;s/'$//")
+echo $RUSTUP_TOOLCHAIN
 docker build \
-    --build-arg RUSTUP_TOOLCHAIN=$(cat ./rust-toolchain) \
+    --build-arg RUSTUP_TOOLCHAIN=$RUSTUP_TOOLCHAIN \
     -t bookshelf \
     --progress=plain \
     .

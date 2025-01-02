@@ -19,7 +19,7 @@ pub struct DbConfig {
 }
 
 impl AppConfig {
-    pub fn load() -> Self {
+    pub fn load() -> anyhow::Result<Self> {
         let http_config: HttpConfig = Config::builder()
             .add_source(
                 config::Environment::with_prefix("HTTP")
@@ -27,8 +27,7 @@ impl AppConfig {
                     .prefix_separator("_"),
             )
             .build()
-            .and_then(|c| c.try_deserialize())
-            .unwrap();
+            .and_then(|c| c.try_deserialize())?;
 
         let db_config: DbConfig = Config::builder()
             .add_source(
@@ -37,14 +36,13 @@ impl AppConfig {
                     .prefix_separator("_"),
             )
             .build()
-            .and_then(|c| c.try_deserialize())
-            .unwrap();
+            .and_then(|c| c.try_deserialize())?;
 
         let app_config = Self {
             http_config,
             db_config,
         };
         tracing::debug!("{:#?}", app_config);
-        app_config
+        Ok(app_config)
     }
 }

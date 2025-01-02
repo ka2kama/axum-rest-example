@@ -14,7 +14,7 @@ pub struct Modules {
 }
 
 impl Modules {
-    pub async fn init(DbConfig { dynamo_endpoint }: DbConfig) -> Self {
+    pub async fn init(DbConfig { dynamo_endpoint }: DbConfig) -> anyhow::Result<Self> {
         let config = {
             let mut config_loader = aws_config::from_env();
             if cfg!(debug_assertions) {
@@ -37,7 +37,7 @@ impl Modules {
 
         // connectivity test
         {
-            let tables_output = dynamodb_client.list_tables().send().await.unwrap();
+            let tables_output = dynamodb_client.list_tables().send().await?;
             tables_output
                 .table_names()
                 .into_iter()
@@ -50,9 +50,9 @@ impl Modules {
         let user_usecase = Arc::new(UserUsecaseImpl::new(user_repo));
         let book_usecase = Arc::new(BookUsecaseImpl::new(book_repo));
 
-        Self {
+        Ok(Self {
             user_usecase,
             book_usecase,
-        }
+        })
     }
 }

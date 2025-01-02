@@ -23,7 +23,7 @@ use crate::module::Modules;
 mod error;
 pub mod route;
 
-pub async fn run(modules: Modules, http_config: HttpConfig) {
+pub async fn run(modules: Modules, http_config: HttpConfig) -> anyhow::Result<()> {
     let app_router = {
         let routes = route::accumulate(modules);
         set_middleware_stack(routes, &http_config)
@@ -36,11 +36,12 @@ pub async fn run(modules: Modules, http_config: HttpConfig) {
     };
     let addr = SocketAddr::from((ipv4, http_config.port));
     tracing::info!("listening on http://{addr}");
-    Server::bind(&addr)
+    let _ = Server::bind(&addr)
         .serve(app_router.into_make_service())
         .with_graceful_shutdown(shutdown_signal())
-        .await
-        .expect("server failed");
+        .await?;
+
+    Ok(())
 }
 
 #[inline]

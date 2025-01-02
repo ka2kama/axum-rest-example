@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use derive_more::Constructor;
+use im_rc::{vector, Vector};
 use serde_dynamo::from_items;
 
 use crate::domain::book::book_repo::BookRepo;
@@ -13,12 +14,12 @@ pub struct BookRepoForDynamoDB {
 
 #[async_trait::async_trait]
 impl BookRepo for BookRepoForDynamoDB {
-    async fn get_books(&self) -> Vec<Book> {
+    async fn get_books(&self) -> Vector<Book> {
         let req = self.dynamodb_client.scan().table_name("books");
         let result = req.send().await.unwrap();
         match result.items {
-            Some(items) if !items.is_empty() => from_items(items).unwrap(),
-            _ => vec![],
+            Some(items) if !items.is_empty() => from_items(items).unwrap().into(),
+            _ => vector![],
         }
     }
 }
