@@ -31,7 +31,7 @@ axum = { version = "0.8.1", default-features = false, features = ["tokio", "http
 tower = { version = "0.5.2", default-features = false }
 tower-http = { version = "0.6.2", default-features = false, features = ["util", "request-id", "compression-br", "timeout", "trace", "sensitive-headers", "map-response-body", "set-header", "catch-panic"] }
 
-aws-config = { version = "0.54.1", default-features = false, features = ["rustls"] }
-aws-sdk-config = { version = "0.24.0", default-features = false, features = ["rustls"] }
-aws-sdk-dynamodb = { version = "0.24.0", default-features = false, features = ["rustls"] }
-serde_dynamo = { version = "4.2.14", default-features = false, features = ["aws-sdk-dynamodb+0_24"] }
+aws-config = { version = "1.5.12", default-features = false, features = ["rustls"] }
+aws-sdk-config = { version = "1.55.0", default-features = false, features = ["rustls", "rt-tokio"] }
+aws-sdk-dynamodb = { version = "1.57.0", default-features = false, features = ["rustls"] }
+serde_dynamo = { version = "4.2.14", default-features = false, features = ["aws-sdk-dynamodb+1"] }

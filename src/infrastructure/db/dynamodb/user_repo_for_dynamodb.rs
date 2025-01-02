@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use aws_sdk_dynamodb::model::AttributeValue;
+use aws_sdk_dynamodb::types::AttributeValue;
 use derive_more::Constructor;
 use maplit::hashmap;
 use serde_dynamo::from_item;
