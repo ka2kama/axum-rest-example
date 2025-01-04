@@ -4,6 +4,7 @@ use std::time::Duration;
 
 use axum::http::{header, HeaderValue, Request};
 use axum::Router;
+use chrono::Utc;
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_http::catch_panic::CatchPanicLayer;
@@ -129,8 +130,12 @@ impl MakeRequestId for MakeRequestSimpleUuid {
       let request_id = match req.headers().get("x-request-id") {
          Some(request_id) if !request_id.is_empty() => request_id.to_owned(),
          _ => {
-            let simple_uuid = Uuid::new_v4().simple();
-            simple_uuid.to_string().parse().unwrap()
+            let request_id = format!(
+               "{}_{}",
+               Uuid::new_v4().simple(),
+               Utc::now().timestamp_millis()
+            );
+            request_id.parse().unwrap()
          }
       };
       Some(RequestId::new(request_id))

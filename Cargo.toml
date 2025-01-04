@@ -10,6 +10,7 @@ overflow-checks = true
 
 [dependencies]
 anyhow = { version = "1.0.92", default-features = false, features = ["std", "backtrace"] }
+chrono = "0.4.39"
 config = { version = "0.15.4", default-features = false }
 derive_more = { version = "1.0.0", default-features = false, features = ["constructor"] }
 im-rc = { version = "15.1.0", default-features = false, features = ["serde"] }
