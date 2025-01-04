@@ -8,3 +8,6 @@
 !**/*.sh
 !**/*.yml
 !**/*.yaml
+
+# exclude files
+*/pnpm-lock.yaml

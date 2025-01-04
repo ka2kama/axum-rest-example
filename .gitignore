@@ -1,6 +1,8 @@
 .env
 .envrc
 .cargo
+bin
+makers
 
 ### VisualStudioCode template
 .vscode/*

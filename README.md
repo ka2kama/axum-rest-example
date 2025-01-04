@@ -2,33 +2,31 @@
 
 ## Setup Local Environment
 
-### Install tools
+### Requirement tools
 
-- [rustup](https://www.rust-lang.org/ja/tools/install)
-- [npm (for install formatters locally)](https://nodejs.org/ja/download/)
+- [rust (rustup & cargo)](https://www.rust-lang.org/ja/tools/install)
+- [pnpm (for install formatters locally)](https://pnpm.io/installation)
+- [docker](https://docs.docker.com)
 
 ### Execute only the first time
 
 ```shell
-# install cargo-make (https://github.com/sagiegurari/cargo-make)
-cargo install --force cargo-make
-
-makers install-tools
+./scripts/initial-setup.sh
 ```
 
 ## Run Locally
 
 ```shell
 # run and initialize dynamodb-local if not yet
-makers setup-local
+./makers setup-local
 
 # run application with hot reload
-makers run
+./makers run
 ```
 
 ## Release Build (not working yet)
 
 ```shell
-makers publish-local
+./makers publish-local
 docker container run -p 9000:9000 --env-file .env bookshelf
 ```

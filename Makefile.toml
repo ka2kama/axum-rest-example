@@ -14,59 +14,51 @@ RUST_BACKTRACE = 1
 RUST_LOG_STYLE = "always"
 DYNAMODB_LOCAL_PORT = 28000
 DYNAMODB_ADMIN_PORT = 28001
-
-[tasks.install-tools]
-script = '''
-#!/usr/bin/env bash
-set -eu
-
-# install formatters for this project
-npm install
-
-cp ./.env-template ./.env
-'''
+PROJECT_ROOT = "${CARGO_MAKE_WORKING_DIRECTORY}"
 
 [tasks.setup-local]
 script = '''
 #!/usr/bin/env bash
 set -eu
 
-docker compose -p bookshelf -f ./local/compose.yml up -d
+PKG_NAME=$(cat ${PROJECT_ROOT}/Cargo.toml | dasel -r toml 'package.name' | sed "s/^'//;s/'$//")
+docker compose -p ${PKG_NAME} -f ${PROJECT_ROOT}/local/compose.yml up -d
 sleep 3
-./local/create-table.sh
+${PROJECT_ROOT}/local/create-table.sh
 echo "dynamodb-admin listening on http://localhost:${DYNAMODB_ADMIN_PORT}"
 '''
 
 [tasks.destroy-local]
 script = '''
-docker compose -p bookshelf -f ./local/compose.yml down --volumes --remove-orphans
+PKG_NAME=$(cat ${PROJECT_ROOT}/Cargo.toml | dasel -r toml 'package.name' | sed "s/^'//;s/'$//")
+docker compose -p ${PKG_NAME} -f ${PROJECT_ROOT}/local/compose.yml down --volumes --remove-orphans
 '''
 
 [tasks.lint]
 description = "Run linters"
 script = '''
-export PATH="${CARGO_MAKE_WORKING_DIRECTORY}/node_modules/.bin:$PATH"
+export PATH="${PROJECT_ROOT}/node_modules/.bin:$PATH"
 cargo +nightly fmt --all -- --check
-dprint check --config ./fmt/.dprint.json
-prettier --check . \
-    --config ./fmt/.prettierrc.toml \
-    --ignore-path ./fmt/.prettierignore
+dprint check --config ${PROJECT_ROOT}/config/.dprint.json
+prettier --check ${PROJECT_ROOT}\
+    --config ${PROJECT_ROOT}/config/.prettierrc.toml \
+    --ignore-path ${PROJECT_ROOT}/config/.prettierignore
 
 cargo +nightly clippy --all-targets --all-features -- -D warnings -D clippy::all
 '''
 
 [tasks.fmt]
 script = '''
-export PATH="${CARGO_MAKE_WORKING_DIRECTORY}/node_modules/.bin:$PATH"
+export PATH="${PROJECT_ROOT}/node_modules/.bin:$PATH"
 
 # format Rust code
 cargo +nightly fmt --all
 
 # format other files
-dprint fmt --incremental=false --config ./fmt/.dprint.json
-prettier --write . \
-    --config ./fmt/.prettierrc.toml \
-    --ignore-path ./fmt/.prettierignore \
+dprint fmt --incremental=false --config ${PROJECT_ROOT}/config/.dprint.json
+prettier --write ${PROJECT_ROOT} \
+    --config ${PROJECT_ROOT}/config/.prettierrc.toml \
+    --ignore-path ${PROJECT_ROOT}/config/.prettierignore \
     > /dev/null
 '''
 
@@ -81,19 +73,19 @@ args = ["build", "--release"]
 
 [tasks.publish-local]
 script = '''
-APP_NAME=$(cat ./Cargo.toml \
-| docker run -i --rm ghcr.io/tomwright/dasel:latest -r toml 'package.name' \
-| sed "s/^'//;s/'$//")
+export PATH="${PROJECT_ROOT}/bin:$PATH"
+
+APP_NAME=$(cat ${PROJECT_ROOT}/Cargo.toml | dasel -r toml 'package.name' | sed "s/^'//;s/'$//")
 docker build \
     --build-arg APP_NAME=$APP_NAME \
     -t $APP_NAME:latest \
     --progress=plain \
-    .
+    ${PROJECT_ROOT}
 '''
 
 [tasks.run]
-env_files = [{ path = "./.env" }]
+env_files = [{ path = "${PROJECT_ROOT}/.env" }]
 command = "cargo"
 args = ["run"]
 dependencies = ["fmt"]
-watch = { watch = ["./Cargo.toml", "./src"] }
+watch = { watch = ["${PROJECT_ROOT}/Cargo.toml", "${PROJECT_ROOT}/src"] }

@@ -18,10 +18,10 @@ jobs:
       - name: Set Up
         run: |
           rustup toolchain install nightly --profile minimal --component rustfmt --component clippy
-          cargo install --force cargo-make
-          makers install-tools
+          npm install -g pnpm
+          ./scripts/initial-setup.sh
       - name: Lint
-        run: makers lint
+        run: ./makers lint
       - name: Run tests
         run: cargo test --release
       - name: Build
