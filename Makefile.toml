@@ -81,11 +81,12 @@ args = ["build", "--release"]
 
 [tasks.publish-local]
 script = '''
-RUSTUP_TOOLCHAIN=$(cat ./rust-toolchain.toml | dasel -r toml 'toolchain.channel' | sed "s/^'//;s/'$//")
-echo $RUSTUP_TOOLCHAIN
+APP_NAME=$(cat ./Cargo.toml \
+| docker run -i --rm ghcr.io/tomwright/dasel:latest -r toml 'package.name' \
+| sed "s/^'//;s/'$//")
 docker build \
-    --build-arg RUSTUP_TOOLCHAIN=$RUSTUP_TOOLCHAIN \
-    -t bookshelf \
+    --build-arg APP_NAME=$APP_NAME \
+    -t $APP_NAME:latest \
     --progress=plain \
     .
 '''
