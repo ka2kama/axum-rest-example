@@ -46,13 +46,13 @@ docker compose -p bookshelf -f ./local/compose.yml down --volumes --remove-orpha
 description = "Run linters"
 script = '''
 export PATH="${CARGO_MAKE_WORKING_DIRECTORY}/node_modules/.bin:$PATH"
-cargo fmt --all -- --check
+cargo +nightly fmt --all -- --check
 dprint check --config ./fmt/.dprint.json
 prettier --check . \
     --config ./fmt/.prettierrc.toml \
     --ignore-path ./fmt/.prettierignore
 
-cargo clippy --all-targets --all-features -- -D warnings -D clippy::all
+cargo +nightly clippy --all-targets --all-features -- -D warnings -D clippy::all
 '''
 
 [tasks.fmt]
@@ -60,7 +60,7 @@ script = '''
 export PATH="${CARGO_MAKE_WORKING_DIRECTORY}/node_modules/.bin:$PATH"
 
 # format Rust code
-cargo fmt --all
+cargo +nightly fmt --all
 
 # format other files
 dprint fmt --incremental=false --config ./fmt/.dprint.json
