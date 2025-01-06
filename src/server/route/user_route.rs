@@ -1,10 +1,13 @@
 use std::sync::Arc;
 
-use axum::extract::{Path, State};
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
-use axum::routing::get;
-use axum::{Json, Router};
+use axum::{
+   extract::{Path, State},
+   http::StatusCode,
+   response::IntoResponse,
+   routing::get,
+   Json,
+   Router,
+};
 
 use crate::usecase::user_usecase::UserUsecase;
 

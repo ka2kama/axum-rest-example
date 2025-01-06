@@ -1,10 +1,7 @@
 use im_rc::Vector;
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::EnvFilter;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
-use crate::config::AppConfig;
-use crate::module::Modules;
+use crate::{config::AppConfig, module::Modules};
 
 mod config;
 mod domain;

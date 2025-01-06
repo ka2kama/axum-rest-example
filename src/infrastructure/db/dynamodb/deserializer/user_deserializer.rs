@@ -2,9 +2,14 @@ use std::collections::HashMap;
 
 use aws_sdk_dynamodb::types::AttributeValue;
 
-use crate::domain::user::User;
-use crate::infrastructure::db::dynamodb::deserializer::MappingFieldError::MissingKey;
-use crate::infrastructure::db::dynamodb::deserializer::{DeserializationError, MappingFieldError};
+use crate::{
+   domain::user::User,
+   infrastructure::db::dynamodb::deserializer::{
+      DeserializationError,
+      MappingFieldError,
+      MappingFieldError::MissingKey,
+   },
+};
 
 pub fn deserialize_user(
    mut item: HashMap<String, AttributeValue>,

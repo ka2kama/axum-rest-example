@@ -1,7 +1,9 @@
 use std::any::Any;
 
-use axum::http::StatusCode;
-use axum::response::{IntoResponse, Response};
+use axum::{
+   http::StatusCode,
+   response::{IntoResponse, Response},
+};
 
 pub fn handle_panic(e: Box<dyn Any + Send + 'static>) -> Response {
    if let Ok(e) = e.downcast::<String>() {

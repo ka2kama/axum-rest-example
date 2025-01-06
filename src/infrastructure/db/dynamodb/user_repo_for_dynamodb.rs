@@ -4,9 +4,10 @@ use aws_sdk_dynamodb::types::AttributeValue;
 use derive_more::Constructor;
 use maplit::hashmap;
 
-use crate::domain::user::user_repo::UserRepo;
-use crate::domain::user::User;
-use crate::infrastructure::db::dynamodb::deserializer::user_deserializer::deserialize_user;
+use crate::{
+   domain::user::{user_repo::UserRepo, User},
+   infrastructure::db::dynamodb::deserializer::user_deserializer::deserialize_user,
+};
 
 #[derive(Constructor)]
 pub struct UserRepoForDynamoDB {

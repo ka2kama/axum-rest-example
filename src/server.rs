@@ -1,24 +1,24 @@
-use std::net::SocketAddr;
-use std::sync::Arc;
-use std::time::Duration;
+use std::{net::SocketAddr, sync::Arc, time::Duration};
 
-use axum::http::{header, HeaderValue, Request};
-use axum::Router;
+use axum::{
+   http::{header, HeaderValue, Request},
+   Router,
+};
 use chrono::Utc;
 use tokio::signal;
 use tower::ServiceBuilder;
-use tower_http::catch_panic::CatchPanicLayer;
-use tower_http::request_id::{
-   MakeRequestId, PropagateRequestIdLayer, RequestId, SetRequestIdLayer,
+use tower_http::{
+   catch_panic::CatchPanicLayer,
+   request_id::{MakeRequestId, PropagateRequestIdLayer, RequestId, SetRequestIdLayer},
+   timeout::TimeoutLayer,
+   trace::{DefaultOnResponse, TraceLayer},
+   LatencyUnit,
+   ServiceBuilderExt,
 };
-use tower_http::timeout::TimeoutLayer;
-use tower_http::trace::{DefaultOnResponse, TraceLayer};
-use tower_http::{LatencyUnit, ServiceBuilderExt};
 use tracing::error_span;
 use uuid::Uuid;
 
-use crate::config::HttpConfig;
-use crate::module::Modules;
+use crate::{config::HttpConfig, module::Modules};
 
 mod error;
 pub mod route;

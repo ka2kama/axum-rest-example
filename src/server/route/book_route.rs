@@ -1,12 +1,8 @@
 use std::sync::Arc;
 
-use axum::extract::State;
-use axum::response::IntoResponse;
-use axum::routing::get;
-use axum::{Json, Router};
+use axum::{extract::State, response::IntoResponse, routing::get, Json, Router};
 
-use crate::server::error::AppError;
-use crate::usecase::book_usecase::BookUsecase;
+use crate::{server::error::AppError, usecase::book_usecase::BookUsecase};
 
 type DynBookUsecase = Arc<dyn BookUsecase + Send + Sync>;
 

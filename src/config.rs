@@ -4,7 +4,7 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize)]
 pub struct AppConfig {
    pub http_config: HttpConfig,
-   pub db_config: DbConfig,
+   pub db_config:   DbConfig,
 }
 
 #[derive(Debug, Deserialize)]

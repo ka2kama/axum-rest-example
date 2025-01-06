@@ -3,9 +3,10 @@ use std::sync::Arc;
 use derive_more::Constructor;
 use im_rc::Vector;
 
-use crate::domain::book::book_repo::BookRepo;
-use crate::domain::book::Book;
-use crate::infrastructure::db::dynamodb::deserializer::book_deserializer;
+use crate::{
+   domain::book::{book_repo::BookRepo, Book},
+   infrastructure::db::dynamodb::deserializer::book_deserializer,
+};
 
 #[derive(Constructor)]
 pub struct BookRepoForDynamoDB {

@@ -1,5 +1,4 @@
-use axum::response::Html;
-use axum::{routing::get, Router};
+use axum::{response::Html, routing::get, Router};
 
 use crate::module::Modules;
 

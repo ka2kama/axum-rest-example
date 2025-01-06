@@ -3,11 +3,17 @@ use std::sync::Arc;
 use aws_config::BehaviorVersion;
 use aws_sdk_config::config::Credentials;
 
-use crate::config::DbConfig;
-use crate::infrastructure::db::dynamodb::book_repo_for_dynamodb::BookRepoForDynamoDB;
-use crate::infrastructure::db::dynamodb::user_repo_for_dynamodb::UserRepoForDynamoDB;
-use crate::usecase::book_usecase::{BookUsecase, BookUsecaseImpl};
-use crate::usecase::user_usecase::{UserUsecase, UserUsecaseImpl};
+use crate::{
+   config::DbConfig,
+   infrastructure::db::dynamodb::{
+      book_repo_for_dynamodb::BookRepoForDynamoDB,
+      user_repo_for_dynamodb::UserRepoForDynamoDB,
+   },
+   usecase::{
+      book_usecase::{BookUsecase, BookUsecaseImpl},
+      user_usecase::{UserUsecase, UserUsecaseImpl},
+   },
+};
 
 pub struct Modules {
    pub user_usecase: Arc<dyn UserUsecase + Send + Sync>,
