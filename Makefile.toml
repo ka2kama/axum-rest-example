@@ -21,6 +21,7 @@ script = '''
 #!/usr/bin/env bash
 set -eu
 
+export PATH="${PROJECT_ROOT}/bin:$PATH"
 PKG_NAME=$(cat ${PROJECT_ROOT}/Cargo.toml | dasel -r toml 'package.name' | sed "s/^'//;s/'$//")
 docker compose -p ${PKG_NAME} -f ${PROJECT_ROOT}/local/compose.yml up -d
 sleep 3
