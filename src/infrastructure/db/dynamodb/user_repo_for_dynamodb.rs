@@ -5,7 +5,7 @@ use derive_more::Constructor;
 use maplit::hashmap;
 
 use crate::{
-   domain::user::{user_repo::UserRepo, User},
+   domain::user::{User, user_repo::UserRepo},
    infrastructure::db::dynamodb::deserializer::user_deserializer::deserialize_user,
 };
 

@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use derive_more::Constructor;
 use im_rc::Vector;
 
-use crate::domain::book::{book_repo::BookRepo, Book};
+use crate::domain::book::{Book, book_repo::BookRepo};
 
 #[async_trait]
 pub trait BookUsecase {

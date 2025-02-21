@@ -4,7 +4,7 @@ use derive_more::Constructor;
 use im_rc::Vector;
 
 use crate::{
-   domain::book::{book_repo::BookRepo, Book},
+   domain::book::{Book, book_repo::BookRepo},
    infrastructure::db::dynamodb::deserializer::book_deserializer,
 };
 

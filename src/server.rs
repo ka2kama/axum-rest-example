@@ -1,19 +1,19 @@
 use std::{net::SocketAddr, sync::Arc, time::Duration};
 
 use axum::{
-   http::{header, HeaderValue, Request},
    Router,
+   http::{HeaderValue, Request, header},
 };
 use chrono::Utc;
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_http::{
+   LatencyUnit,
+   ServiceBuilderExt,
    catch_panic::CatchPanicLayer,
    request_id::{MakeRequestId, PropagateRequestIdLayer, RequestId, SetRequestIdLayer},
    timeout::TimeoutLayer,
    trace::{DefaultOnResponse, TraceLayer},
-   LatencyUnit,
-   ServiceBuilderExt,
 };
 use tracing::error_span;
 use uuid::Uuid;

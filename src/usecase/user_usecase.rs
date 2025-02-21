@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use derive_more::Constructor;
 
-use crate::domain::user::{user_repo::UserRepo, User};
+use crate::domain::user::{User, user_repo::UserRepo};
 
 #[async_trait::async_trait]
 pub trait UserUsecase {

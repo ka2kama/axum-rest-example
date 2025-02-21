@@ -1,5 +1,5 @@
 use im_rc::Vector;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
+use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
 
 use crate::{config::AppConfig, module::Modules};
 
